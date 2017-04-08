@@ -73,8 +73,10 @@ const board = makeBoard(5, .20);
 
 function generateGrid(board) {
     var $grid = $('<table>');
-    board.forEach(row => {
-        $grid.append(row);
+    board.forEach(elems => {
+        let $row = $('<tr>');
+        $row.append(elems);
+        $grid.append($row);
     })
     return $grid;
 }
