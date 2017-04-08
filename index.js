@@ -41,8 +41,8 @@ function makeBoard(n, bombRate) {
         for (let x = j - 1; x < j + 2; x++) {
             try {
                 // this has to be accessed like board[i+1][x].data().bomb
-                if (board[i-1][x].bomb) adjacent++; // top
-                if (board[i+1][x].bomb) adjacent++; // bottom
+                if (board[i-1][x].data().bomb) adjacent++; // top
+                if (board[i+1][x].data().bomb) adjacent++; // bottom
             } catch(e) {
                 // console.error(e);
                 continue;
@@ -50,12 +50,12 @@ function makeBoard(n, bombRate) {
         }
         // left and right adjacent
         try {
-            if (board[i][j-1].bomb) adjacent++;
+            if (board[i][j-1].data().bomb) adjacent++;
         } catch(e) {
             // console.error(e);
         }
         try {
-            if (board[i][j+1].bomb) adjacent++;
+            if (board[i][j+1].data().bomb) adjacent++;
         } catch(e) {
             // console.error(e);
         }
@@ -65,23 +65,21 @@ function makeBoard(n, bombRate) {
 
     init();
     initAdjacent();
+    console.log(board)
     return board;
 }
 
 const board = makeBoard(5, .20);
 
-function generateGrid( rows, cols ) {
+function generateGrid(board) {
     var $grid = $('<table>');
-    for ( row = 1; row <= rows; row++ ) {
-        $grid.append($('<tr>')) 
-        for ( col = 1; col <= cols; col++ ) {      
-            $grid.append($('<td>'));
-        }
-    }
+    board.forEach(row => {
+        $grid.append(row);
+    })
     return $grid;
 }
 
-$( "#tableContainer" ).append( generateGrid( 5, 5) );
+$("#tableContainer").append(generateGrid(board));
 
 $( "td" ).click(function() {
     var index = $( "td" ).index( this );
