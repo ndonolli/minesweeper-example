@@ -11,21 +11,12 @@ function makeBoard(n, bombRate) {
         for (var i = 0; i < n; i++) {
             board.push([]);
             for (var j = 0; j < n; j++) {
-                let random = Math.random();
-                if (random < bombRate) {
-                    board[i].push({
-                        // push the new <td> element here
-                        // with this object in the data attr
-                        // $().data({...})
-                        bomb: true,
-                        clicked: false,
-                    });
-                } else {
-                    board[i].push({
-                        bomb: false,
-                        clicked: false,
-                    });
-                }
+                let isBomb = Math.random() < bombRate ? false : true;
+                let $space = $('<td>').data({
+                    bomb: isBomb,
+                    clicked: false,
+                });
+                board[i].push($space);
             }
         }
     }
