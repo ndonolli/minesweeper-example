@@ -11,7 +11,7 @@ function makeBoard(n, bombRate) {
         for (var i = 0; i < n; i++) {
             board.push([]);
             for (var j = 0; j < n; j++) {
-                let isBomb = Math.random() < bombRate ? false : true;
+                let isBomb = Math.random() > bombRate ? false : true;
                 let $space = $('<td>').data({
                     bomb: isBomb,
                     clicked: false,
@@ -83,12 +83,25 @@ function generateGrid(board) {
 
 $("#tableContainer").append(generateGrid(board));
 
+function _handleClick(self) {
+    let space = $(self).data();
+    let txt = space.bomb ? 'bomb' : space.adjacent;
+    $(self).text(txt);
+    if (space.bomb) $(self).addClass('bomb')
+    space.clicked = true;
+}
+
+function bombGoBoom() {
+    // bomb go boom 
+    $('td').each(function(i, space) {
+        _handleClick(space);
+    })
+}
+
+
 $( "td" ).click(function() {
-    var index = $( "td" ).index( this );
-    var row = Math.floor( ( index ) / 5) + 1;
-    var col = ( index % 5 ) + 1;
-    $( "span" ).text( "That was row " + row + " and col " + col );
-    $( this ).css( 'background-color', 'red' );
+    _handleClick(this)
+    if ($(this).data().bomb) bombGoBoom();
 });
 
 // end of onReady
