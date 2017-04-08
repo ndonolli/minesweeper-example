@@ -26,13 +26,13 @@ function makeBoard(n, bombRate) {
         // storing adjacent in piece object
         for (var i = 0; i < n; i++) {
             for (var j = 0; j < n; j++) {
-                board[i][j].adjacent = board.getAdjacent(i, j);
+                board[i][j].data().adjacent = board.getAdjacent(i, j);
             }
         }
     }
 
     board.clickPiece = function(i, j) {
-        this[i][j].clicked = true;
+        this[i][j].data().clicked = true;
     }
 
     board.getAdjacent = function(i, j) {
