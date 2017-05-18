@@ -4,15 +4,15 @@ function makeBoard(n, bombRate) {
   // @param {bombRate} <float> Probability of bombs
   // @return <Array> "board" of <td> elements indexed at board[i][j]
 
-  var board = [];
+  let board = [];
 
   function init() {
     // initializes board and randomizes bombs
     // @param none
     // @return void
-    for (var i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       board.push([]);
-      for (var j = 0; j < n; j++) {
+      for (let j = 0; j < n; j++) {
         let isBomb = Math.random() > bombRate ? false : true;
         let $space = $('<td>').data({
           bomb: isBomb,
@@ -28,8 +28,8 @@ function makeBoard(n, bombRate) {
     // storing adjacent in piece object
     // @param none
     // @return void
-    for (var i = 0; i < n; i++) {
-      for (var j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
         board[i][j].data().adjacent = calculateAdjacent(i, j);
       }
     }
@@ -79,7 +79,7 @@ function renderBoard(board) {
     // appends board array (holding <td>) onto an html table element
     // @param {board} Array board generated from makeBoard()
     // return <HTML elem> $grid <table> elem with board <td> elems appended
-    var $grid = $('<table>');
+    let $grid = $('<table>');
 
     board.forEach(elems => {
       let $row = $('<tr>');
@@ -90,7 +90,7 @@ function renderBoard(board) {
     return $grid;
   }
 
-  let $grid = generateGrid(board);
+  const $grid = generateGrid(board);
   $("#table-container").empty().append($grid);
 }
 
@@ -111,14 +111,11 @@ function initGameRules() {
 
   function bombGoBoom() {
     // bomb go boom 
-    $('td').each(function(i, space) {
-      togglePiece(space);
-    })
+    $('td').each((i, space) => togglePiece(space));
   }
 
-
   $( "td" ).click(function() {
-    togglePiece(this)
+    togglePiece(this);
     if ($(this).data().bomb) bombGoBoom();
   });
 
