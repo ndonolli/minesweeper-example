@@ -1,108 +1,138 @@
-$(document).ready(function() {
 function makeBoard(n, bombRate) {
-    // creates n * n board of array vectors
-    // @param {n} int Specify demension
-    // @param {bombRate} float Probability of bombs
+  // creates n * n board of array vectors
+  // @param {n} <int> Specify demension
+  // @param {bombRate} <float> Probability of bombs
+  // @return <Array> "board" of <td> elements indexed at board[i][j]
 
-    var board = [];
+  var board = [];
 
-    function init() {
-        // initializes board and randomizes bombs
-        for (var i = 0; i < n; i++) {
-            board.push([]);
-            for (var j = 0; j < n; j++) {
-                let isBomb = Math.random() > bombRate ? false : true;
-                let $space = $('<td>').data({
-                    bomb: isBomb,
-                    clicked: false,
-                });
-                board[i].push($space);
-            }
-        }
+  function init() {
+    // initializes board and randomizes bombs
+    // @param none
+    // @return void
+    for (var i = 0; i < n; i++) {
+      board.push([]);
+      for (var j = 0; j < n; j++) {
+        let isBomb = Math.random() > bombRate ? false : true;
+        let $space = $('<td>').data({
+          bomb: isBomb,
+          clicked: false,
+        });
+        board[i].push($space);
+      }
     }
+  }
 
-    function initAdjacent() {
-        // traverces and calls getAdjacent() for each piece,
-        // storing adjacent in piece object
-        for (var i = 0; i < n; i++) {
-            for (var j = 0; j < n; j++) {
-                board[i][j].data().adjacent = board.getAdjacent(i, j);
-            }
-        }
+  function setAdjacent() {
+    // traverses and calls getAdjacent() for each piece,
+    // storing adjacent in piece object
+    // @param none
+    // @return void
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < n; j++) {
+        board[i][j].data().adjacent = calculateAdjacent(i, j);
+      }
     }
+  }
 
-    board.clickPiece = function(i, j) {
-        this[i][j].data().clicked = true;
+  function calculateAdjacent(i, j) {
+    // called with coords of one piece and calculates adjacent bombs
+    // used within initAdjacent
+    // @param none
+    // @return void
+    let adjacent = 0;
+
+    // get the top and bottom rows first
+    for (let x = j - 1; x < j + 2; x++) {
+      // try blocks to bypass errors when board[i][j] is undefined.
+      try {
+        if (board[i-1][x].data().bomb) adjacent++; // top
+      } catch(e) {} // no handler needed, using catch like a 'continue'
+      try {
+        if (board[i+1][x].data().bomb) adjacent++; // bottom
+      } catch(e) {}
     }
+      // left and right adjacent
+    try {
+      if (board[i][j-1].data().bomb) adjacent++;
+    } catch(e) {} // again, no handler is needed
 
-    board.getAdjacent = function(i, j) {
-        let adjacent = 0;
-        // top adjacent
-        for (let x = j - 1; x < j + 2; x++) {
-            try {
-                // this has to be accessed like board[i+1][x].data().bomb
-                if (board[i-1][x].data().bomb) adjacent++; // top
-                if (board[i+1][x].data().bomb) adjacent++; // bottom
-            } catch(e) {
-                // console.error(e);
-                continue;
-            }
-        }
-        // left and right adjacent
-        try {
-            if (board[i][j-1].data().bomb) adjacent++;
-        } catch(e) {
-            // console.error(e);
-        }
-        try {
-            if (board[i][j+1].data().bomb) adjacent++;
-        } catch(e) {
-            // console.error(e);
-        }
+    try {
+      if (board[i][j+1].data().bomb) adjacent++;
+    } catch(e) {} // but a catch block is necessary
+    
+    return adjacent;
+  }
 
-        return adjacent;
-    }
-
-    init();
-    initAdjacent();
-    console.log(board)
-    return board;
+  // start the initialization captain!
+  init();
+  setAdjacent();
+  return board;
 }
 
-const board = makeBoard(5, .20);
+function renderBoard(board) {
+  // renders board onto #tableContainer element
+  // @param {board} <Array> board generated from makeBoard
+  // return void
 
-function generateGrid(board) {
+  function generateGrid(board) {
+    // appends board array (holding <td>) onto an html table element
+    // @param {board} Array board generated from makeBoard()
+    // return <HTML elem> $grid <table> elem with board <td> elems appended
     var $grid = $('<table>');
+
     board.forEach(elems => {
-        let $row = $('<tr>');
-        $row.append(elems);
-        $grid.append($row);
+      let $row = $('<tr>');
+      $row.append(elems);
+      $grid.append($row);
     })
+
     return $grid;
+  }
+
+  let $grid = generateGrid(board);
+  $("#table-container").empty().append($grid);
 }
 
-$("#tableContainer").append(generateGrid(board));
+function initGameRules() {
 
-function _handleClick(self) {
-    let space = $(self).data();
-    let txt = space.bomb ? 'bomb' : space.adjacent;
-    $(self).text(txt);
-    if (space.bomb) $(self).addClass('bomb')
+  function togglePiece(self) {
+    let space = $(self).data(), txt;
     space.clicked = true;
-}
 
-function bombGoBoom() {
+    if (space.bomb) {
+      $(self).addClass('bomb');
+      txt = 'bomb';
+    } else {
+      txt = space.adjacent;
+    }
+    $(self).text(txt);
+  }
+
+  function bombGoBoom() {
     // bomb go boom 
     $('td').each(function(i, space) {
-        _handleClick(space);
+      togglePiece(space);
     })
+  }
+
+
+  $( "td" ).click(function() {
+    togglePiece(this)
+    if ($(this).data().bomb) bombGoBoom();
+  });
+
 }
 
+function initGame(n, bombRate) {
+  // call makeBoard
+  const board = makeBoard(n, bombRate);
+  // call the function that appends board to tableContainer
+  renderBoard(board);
+  // initialize gameRules
+  initGameRules();
+}
 
-$( "td" ).click(function() {
-    _handleClick(this)
-    if ($(this).data().bomb) bombGoBoom();
-});
-
-// end of onReady
-});
+$(document).ready(() => {
+  initGame(5, .25)
+})
