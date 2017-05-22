@@ -1,6 +1,6 @@
 function makeBoard(n, bombRate) {
   // creates n * n board of array vectors
-  // @param {n} <int> Specify demension
+  // @param {n} <int> Specify dimension
   // @param {bombRate} <float> Probability of bombs
   // @return <Array> "board" of <td> elements indexed at board[i][j]
 
@@ -24,7 +24,7 @@ function makeBoard(n, bombRate) {
   }
 
   function setAdjacent() {
-    // traverses and calls getAdjacent() for each piece,
+    // traverses and calls calculateAdjacent() for each piece,
     // storing adjacent in piece object
     // @param none
     // @return void
@@ -124,7 +124,7 @@ function initGameRules() {
 function initGame(n, bombRate) {
   // call makeBoard
   const board = makeBoard(n, bombRate);
-  // call the function that appends board to tableContainer
+  // call the function that appends board to #table-container
   renderBoard(board);
   // initialize gameRules
   initGameRules();
